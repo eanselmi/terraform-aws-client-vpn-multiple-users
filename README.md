@@ -59,7 +59,8 @@ locals {
   }
 }
 module "client-vpn" {
-  source                 = "../../modules/aws-vpn-client"
+  source  = "eanselmi/client-vpn-multiple-users/aws"
+  version = "1.0.2"
   organization_name      = local.cliet_vpn.organization_name
   project-name           = local.cliet_vpn.project-name
   aws-vpn-client-list    = local.cliet_vpn.aws-vpn-client-list
