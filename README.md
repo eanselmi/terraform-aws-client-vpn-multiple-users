@@ -21,21 +21,6 @@
 
 <br/>
 
-module "client-vpn" {
-  source                 = "../../modules/aws-vpn-client"
-  organization_name      = local.cliet_vpn.organization_name
-  project-name           = local.cliet_vpn.project-name
-  aws-vpn-client-list    = local.cliet_vpn.aws-vpn-client-list
-  vpc_id                 = module.vpc.vpc_id
-  subnets_id             = [module.vpc.private_subnets[0]]
-  client_cidr_block      = local.cliet_vpn.client_cidr_block
-  split_tunnel           = local.cliet_vpn.split_tunnel
-  vpn_inactive_period    = local.cliet_vpn.vpn_inactive_period
-  session_timeout_hours  = local.cliet_vpn.session_timeout_hours
-  logs_retention_in_days = local.cliet_vpn.logs_retention_in_days
-  additional_routes      = local.cliet_vpn.additional_routes
-}
-
 ## Inputs
 
 | Name                        | Description                                                          | Type               | Default | Required |
@@ -90,6 +75,16 @@ module "client-vpn" {
 
 ```
 
+## How to remove/revoke users
+
+An important part is how to delete or revoke a user; it is not enough to remove them from the list and delete their certificate. The certificate must be revoked, and this must be done outside of Terraform, and the VPN must be updated. These are the steps:
+
+1. From AWS-Parameter-Store, download the certificate and private key of the CA
+2. From AWS-Parameter-Store, download the certificate that we want to revoke
+3. We open a terminal and go to the directory where we are going to manage the downloaded certificates
+4. To revoke the certificate, please execute "openssl ca -revoke user.cer -keyfile ca.key -cert ca.cer"
+5. Now update the CRL "openssl ca -gencrl -out revocations.crl -keyfile ca.key -cert ca.cer"
+6. We import the CRL to our VPN endpoint "aws ec2 import-client-vpn-client-certificate-revocation-list --certificate-revocation-list file://revocations.crl --client-vpn-endpoint-id endpoint_id --region region" We can import the CRL using the AWS console
 
 ## Requirements
 
