@@ -36,7 +36,7 @@ module "client-vpn" {
   additional_routes      = local.cliet_vpn.additional_routes
 }
 
-# Inputs
+## Inputs
 
 | Name                        | Description                                                          | Type               | Default | Required |
 | --------------------------- | -------------------------------------------------------------------- | ------------------ | ------- | :------: |
@@ -52,6 +52,43 @@ module "client-vpn" {
 | logs_retention_in_days                    | Retention perior for vpn logs in cloudwatch     | `numeric` | `{}`   |    yes    |
 | additional_routes                    | List of additional routes     | `list(map(string))` | `{}`   |    yes    |                    | Retention perior for vpn logs in cloudwatch     | `numeric` | `{}`   |    yes    |
 
+
+## Example
+
+```
+locals {
+  cliet_vpn = {
+    organization_name      = "mycompany"
+    project-name           = "client-vpn"
+    aws-vpn-client-list    = ["root", "john", "michael", "clara"]
+    client_cidr_block      = "172.24.0.0/22"
+    split_tunnel           = true
+    vpn_inactive_period    = 1800
+    session_timeout_hours  = 8
+    logs_retention_in_days = 7
+    additional_routes = [{
+      destination_cidr = "10.100.0.0/16"
+      description      = "strging"
+      subnet_id        = subnet-0b509a1c548112f26
+    }]
+  }
+}
+module "client-vpn" {
+  source                 = "../../modules/aws-vpn-client"
+  organization_name      = local.cliet_vpn.organization_name
+  project-name           = local.cliet_vpn.project-name
+  aws-vpn-client-list    = local.cliet_vpn.aws-vpn-client-list
+  vpc_id                 = vpc-0a959fbbb6e218299
+  subnets_id             = [subnet-0b509a1c548112f30]
+  client_cidr_block      = local.cliet_vpn.client_cidr_block
+  split_tunnel           = local.cliet_vpn.split_tunnel
+  vpn_inactive_period    = local.cliet_vpn.vpn_inactive_period
+  session_timeout_hours  = local.cliet_vpn.session_timeout_hours
+  logs_retention_in_days = local.cliet_vpn.logs_retention_in_days
+  additional_routes      = local.cliet_vpn.additional_routes
+}
+
+```
 
 
 ## Requirements
