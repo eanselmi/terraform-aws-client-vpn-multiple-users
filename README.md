@@ -83,9 +83,11 @@ An important part is how to delete or revoke a user; it is not enough to remove 
 1. From AWS-Parameter-Store, download the certificate and private key of the CA
 2. From AWS-Parameter-Store, download the certificate that we want to revoke
 3. We open a terminal and go to the directory where we are going to manage the downloaded certificates
-4. To revoke the certificate, please execute "openssl ca -revoke user.cer -keyfile ca.key -cert ca.cer"
-5. Now update the CRL "openssl ca -gencrl -out revocations.crl -keyfile ca.key -cert ca.cer"
-6. We import the CRL to our VPN endpoint "aws ec2 import-client-vpn-client-certificate-revocation-list --certificate-revocation-list file://revocations.crl --client-vpn-endpoint-id endpoint_id --region region" We can import the CRL using the AWS console
+4. Adjust the default_crl_days variable in your openssl.cnf config file (default value is 30 days)
+5. To revoke the certificate, please execute "openssl ca -revoke user.cer -keyfile ca.key -cert ca.cer"
+6. Now update the CRL "openssl ca -gencrl -out revocations.crl -keyfile ca.key -cert ca.cer"
+7. We import the CRL to our VPN endpoint "aws ec2 import-client-vpn-client-certificate-revocation-list --certificate-revocation-list file://revocations.crl --client-vpn-endpoint-id endpoint_id --region region" We can import the CRL using the AWS console
+8. Validate CRL expiration date using "openssl crl -in revocations.crl -text"
 
 ## Requirements
 
