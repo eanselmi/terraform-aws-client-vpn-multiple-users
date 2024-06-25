@@ -1,5 +1,5 @@
 resource "aws_ec2_client_vpn_endpoint" "vpn-client" {
-  description            = "${var.project-name}-vpn-client"
+  description            = var.project-name
   server_certificate_arn = aws_acm_certificate.server.arn
   vpc_id                 = var.vpc_id
   security_group_ids     = [aws_security_group.vpn.id]
@@ -17,7 +17,7 @@ resource "aws_ec2_client_vpn_endpoint" "vpn-client" {
     cloudwatch_log_stream = aws_cloudwatch_log_stream.vpn-logs-stream.name
   }
   tags = {
-    Name = "${var.organization_name}-vpn-client"
+    Name = "${var.organization_name}"
   }
 }
 resource "aws_ec2_client_vpn_network_association" "vpn-client" {
